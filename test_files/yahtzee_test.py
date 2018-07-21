@@ -133,6 +133,77 @@ class TestYahtzee(unittest.TestCase):
         score = self.scorer.score(dice_set, 'yahtzee')
         self.assertEqual(score, 0)
 
+    def test_ones_12131(self):
+        dice_set = [1,2,1,3,1]
+        score = self.scorer.score(dice_set, 'ones')
+        self.assertEqual(score, 3)
+
+    def test_ones_11111(self):
+        dice_set = [1,1,1,1,1]
+        score = self.scorer.score(dice_set, 'ones')
+        self.assertEqual(score, 5)
+
+    def test_ones_22222(self):
+        dice_set = [2,2,2,2,2]
+        score = self.scorer.score(dice_set, 'ones')
+        self.assertEqual(score, 0)
+
+    def test_twos_22222(self):
+        dice_set = [2,2,2,2,2]
+        score = self.scorer.score(dice_set, 'twos')
+        self.assertEqual(score, 10)
+
+    def test_twos_23262(self):
+        dice_set = [2,3,2,6,2]
+        score = self.scorer.score(dice_set, 'twos')
+        self.assertEqual(score, 6)
+
+    def test_threes_23233(self):
+        dice_set = [2,3,2,3,3]
+        score = self.scorer.score(dice_set, 'threes')
+        self.assertEqual(score, 9)
+
+    def test_fours_46524(self):
+        dice_set = [4,6,5,2,4]
+        score = self.scorer.score(dice_set, 'fours')
+        self.assertEqual(score, 8)
+
+    def test_fours_15555(self):
+        dice_set = [1,5,5,5,5]
+        score = self.scorer.score(dice_set, 'fives')
+        self.assertEqual(score, 20)
+
+    def test_fours_66666(self):
+        dice_set = [6,6,6,6,6]
+        score = self.scorer.score(dice_set, 'sixes')
+        self.assertEqual(score, 30)
+
+    def test_pair_66123(self):
+        dice_set = [6,6,1,2,3]
+        score = self.scorer.score(dice_set, 'pair')
+        self.assertEqual(score, 12)
+
+    def test_pair_22134(self):
+        dice_set = [2,2,1,3,4]
+        score = self.scorer.score(dice_set, 'pair')
+        self.assertEqual(score, 4)
+
+    def test_pair_22234(self):
+        dice_set = [2,2,2,3,4]
+        score = self.scorer.score(dice_set, 'pair')
+        self.assertEqual(score, 0)
+
+    def test_pair_22166(self):
+        dice_set = [2,2,1,6,6]
+        score = self.scorer.score(dice_set, 'pair')
+        self.assertEqual(score, 12)
+
+    def test_pair_33331(self):
+        dice_set = [3,3,3,3,1]
+        score = self.scorer.score(dice_set, 'pair')
+        self.assertEqual(score, 0)
+
+
     def test_nonsense(self):
         dice_set = [3,2,1,5,1]
 
@@ -141,4 +212,5 @@ class TestYahtzee(unittest.TestCase):
             self.fail('Expecting an exception')
         except NonSupportedRuleException:
             self.assertTrue(True, "the correct type of exception was raised")
+
 
