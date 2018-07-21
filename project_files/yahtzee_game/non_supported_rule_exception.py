@@ -1,0 +1,3 @@
+
+class NonSupportedRuleException(Exception):
+    pass

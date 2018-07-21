@@ -1,0 +1,15 @@
+import unittest
+from pynput import keyboard
+
+
+
+
+
+
+class TestOutput(unittest.TestCase):
+
+    def test_left_output(self,direction):
+
+        if direction == 'left':
+            self.assertEqual(button_output,'left')
+
