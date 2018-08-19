@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-venv/bin/py.test ./test_files -srw
+venv/bin/py.test ./test_files -s

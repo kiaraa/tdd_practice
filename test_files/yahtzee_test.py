@@ -95,7 +95,7 @@ For example, when placed on "full house"
 
 import unittest
 
-from project_files.yahtzee_game.non_supported_rule_exception import NonSupportedRuleException
+from project_files.yahtzee_game.yahtzee_exceptions import *
 from project_files.yahtzee_game.yahtzee_scorer import Scorer
 
 class TestYahtzee(unittest.TestCase):
@@ -203,6 +203,116 @@ class TestYahtzee(unittest.TestCase):
         score = self.scorer.score(dice_set, 'pair')
         self.assertEqual(score, 0)
 
+    def test_two_pairs_22344(self):
+        dice_set = [2,2,3,4,4]
+        score = self.scorer.score(dice_set, 'two_pairs')
+        self.assertEqual(score, 12)
+
+    def test_two_pairs_22355(self):
+        dice_set = [2,2,3,5,5]
+        score = self.scorer.score(dice_set, 'two_pairs')
+        self.assertEqual(score, 14)
+
+    def test_two_pairs_12355(self):
+        dice_set = [1,2,3,5,5]
+        score = self.scorer.score(dice_set, 'two_pairs')
+        self.assertEqual(score, 0)
+
+    def test_triples_11145(self):
+        dice_set = [1,1,1,4,5]
+        score = self.scorer.score(dice_set, 'triples')
+        self.assertEqual(score, 3)
+
+    def test_triples_22245(self):
+        dice_set = [2,2,2,4,5]
+        score = self.scorer.score(dice_set, 'triples')
+        self.assertEqual(score, 6)
+
+    def test_triples_22225(self):
+        dice_set = [2,2,2,2,5]
+        score = self.scorer.score(dice_set, 'triples')
+        self.assertEqual(score, 0)
+
+    def test_triples_23465(self):
+        dice_set = [2,3,4,6,5]
+        score = self.scorer.score(dice_set, 'triples')
+        self.assertEqual(score, 0)
+
+    def test_quadruples_23465(self):
+        dice_set = [2,3,4,6,5]
+        score = self.scorer.score(dice_set, 'quadruples')
+        self.assertEqual(score, 0)
+
+    def test_quadruples_44445(self):
+        dice_set = [4,4,4,4,5]
+        score = self.scorer.score(dice_set, 'quadruples')
+        self.assertEqual(score, 16)
+
+    def test_quadruples_44444(self):
+        dice_set = [4,4,4,4,4]
+        score = self.scorer.score(dice_set, 'quadruples')
+        self.assertEqual(score, 0)
+
+    def test_small_straight_12345(self):
+        dice_set = [1,2,3,4,5]
+        score = self.scorer.score(dice_set, 'small_straight')
+        self.assertEqual(score, 15)
+
+    def test_small_straight_23456(self):
+        dice_set = [2,3,4,5,6]
+        score = self.scorer.score(dice_set, 'small_straight')
+        self.assertEqual(score, 0)
+
+    def test_small_straight_23451(self):
+        dice_set = [2,3,4,5,1]
+        score = self.scorer.score(dice_set, 'small_straight')
+        self.assertEqual(score, 15)
+
+    def test_large_straight_23456(self):
+        dice_set = [2,3,4,5,6]
+        score = self.scorer.score(dice_set, 'large_straight')
+        self.assertEqual(score, 20)
+
+    def test_large_straight_23451(self):
+        dice_set = [2,3,4,5,1]
+        score = self.scorer.score(dice_set, 'large_straight')
+        self.assertEqual(score, 0)
+
+    def test_large_straight_62345(self):
+        dice_set = [6,2,3,4,5]
+        score = self.scorer.score(dice_set, 'large_straight')
+        self.assertEqual(score, 20)
+
+    def test_full_house_62345(self):
+        dice_set = [6,2,3,4,5]
+        score = self.scorer.score(dice_set, 'full_house')
+        self.assertEqual(score, 0)
+
+    def test_full_house_11122(self):
+        dice_set = [1,1,1,2,2]
+        score = self.scorer.score(dice_set, 'full_house')
+        self.assertEqual(score, 7)
+
+    def test_full_house_55522(self):
+        dice_set = [5,5,5,2,2]
+        score = self.scorer.score(dice_set, 'full_house')
+        self.assertEqual(score, 19)
+
+    def test_full_house_55552(self):
+        dice_set = [5,5,5,5,2]
+        score = self.scorer.score(dice_set, 'full_house')
+        self.assertEqual(score, 0)
+
+    def test_full_house_55555(self):
+        dice_set = [5,5,5,5,5]
+        score = self.scorer.score(dice_set, 'full_house')
+        self.assertEqual(score, 0)
+
+
+
+
+
+
 
     def test_nonsense(self):
         dice_set = [3,2,1,5,1]
@@ -210,7 +320,25 @@ class TestYahtzee(unittest.TestCase):
         try:
             score = self.scorer.score(dice_set, 'nonsense')
             self.fail('Expecting an exception')
-        except NonSupportedRuleException:
-            self.assertTrue(True, "the correct type of exception was raised")
+        except NonSupportedRuleException as exception:
+            self.assertEqual(exception.message, "Please enter a valid ruleset name :)")
+
+    def test_wrong_number_of_dice_6dice(self):
+        dice_set = [3,2,1,5,1,1]
+
+        try:
+            score = self.scorer.score(dice_set, 'full_house')
+            self.fail('Expecting an exception')
+        except WrongNumberOfDiceException as exception:
+            self.assertEqual(exception.message, "A list of exactly 5 values must be passed in as dice_set")
+
+    def test_wrong_number_of_dice_4dice(self):
+        dice_set = [3,2,1,5]
+
+        try:
+            score = self.scorer.score(dice_set, 'full_house')
+            self.fail('Expecting an exception')
+        except WrongNumberOfDiceException as exception:
+            self.assertEqual(exception.message, "A list of exactly 5 values must be passed in as dice_set")
 
 
