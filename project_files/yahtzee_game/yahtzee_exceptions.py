@@ -6,3 +6,10 @@ class WrongNumberOfDiceException(Exception):
 
 class NonSupportedRuleException(Exception):
     message = "Please enter a valid ruleset name :)"
+
+
+class ScoreTypeNotAvailableException(Exception):
+    message = "This score type is not currently available to you."
+
+class InvalidScoreException(Exception):
+    message = "Score must be an integer."
