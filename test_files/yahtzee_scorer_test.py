@@ -98,7 +98,7 @@ import unittest
 from project_files.yahtzee_game.yahtzee_exceptions import *
 from project_files.yahtzee_game.yahtzee_scorer import Scorer
 
-class TestYahtzee(unittest.TestCase):
+class TestYahtzeeScorer(unittest.TestCase):
 
     def setup_method(self, method):
         self.scorer = Scorer()
