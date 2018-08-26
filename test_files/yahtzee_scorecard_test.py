@@ -64,4 +64,11 @@ class TestYahtzeeScorecard(unittest.TestCase):
             self.scorecard.score_a_turn(turn_score="hi im the best score", score_type='ones')
             self.fail("expecting an exception")
         except InvalidScoreException as exception:
-            self.assertEqual(exception.message, "Score must be an integer.")
+            self.assertEqual(exception.message, "Score must be a non-negative integer.")
+
+    def test_raises_exception_with_negative_score(self):
+        try:
+            self.scorecard.score_a_turn(turn_score=-1, score_type='ones')
+            self.fail("expecting an exception")
+        except InvalidScoreException as exception:
+            self.assertEqual(exception.message, "Score must be a non-negative integer.")
