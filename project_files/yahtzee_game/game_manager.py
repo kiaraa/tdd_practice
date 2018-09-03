@@ -3,19 +3,24 @@ from project_files.yahtzee_game.yahtzee_scorecard import Scorecard
 
 class GameManager():
 
-    def __init__(self, UI, turn_manager):
+    def __init__(self, UI, turn_manager, victory_declarer):
         self.ui = UI
         self.turn_manager = turn_manager
         self.scorecards = []
+        self.victory_declarer = victory_declarer
 
-    def start_game(self):
-        self.turn_manager.take_a_turn()
-
-        number_of_players = self.ui.ask_user("How many people are playing?")
-        while number_of_players != 0:
-            self.scorecards.append(Scorecard())
-            number_of_players -= 1
-
+    def play_game(self):
         self.ui.display("Welcome to YAHTZEE!!!!!")
 
-#TODO: Make tests so that this ridiculous order of doing things doesn't work.
+        number_of_players = self.ui.ask_user("How many people are playing?")
+        for i in range(0, number_of_players):
+            self.scorecards.append(Scorecard())
+
+        self.victory_declarer.declare_victor(self.scorecards) #TODO - this should be last
+
+        number_of_score_types = len(Scorecard().available_score_types)
+        for i in range(0, number_of_score_types):
+            for scorecard in self.scorecards:
+                self.turn_manager.take_a_turn(scorecard)
+
+
