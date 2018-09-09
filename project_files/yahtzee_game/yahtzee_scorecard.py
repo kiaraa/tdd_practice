@@ -3,8 +3,9 @@ from project_files.yahtzee_game.yahtzee_exceptions import ScoreTypeNotAvailableE
 
 class Scorecard:
 
-    def __init__(self):
+    def __init__(self, player_name):
         self.total_score = 0
+        self.player_name = player_name
         self.available_score_types = ['yahtzee',
                                       'chance',
                                       'ones',
@@ -38,3 +39,11 @@ class Scorecard:
             raise ScoreTypeNotAvailableException()
         if not isinstance(turn_score, int) or turn_score < 0:
             raise InvalidScoreException()
+
+    def __eq__(self, other):
+        if len(self.available_score_types) != len(other.available_score_types):
+            return False
+        for i in range(0, len(self.available_score_types)):
+            if self.available_score_types[i] != other.available_score_types[i]:
+                return False
+        return self.total_score == other.total_score and self.player_name == other.player_name

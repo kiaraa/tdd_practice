@@ -14,13 +14,12 @@ class GameManager():
 
         number_of_players = self.ui.ask_user("How many people are playing?")
         for i in range(0, number_of_players):
-            self.scorecards.append(Scorecard())
+            self.scorecards.append(Scorecard(player_name="Player " + str((i + 1))))
 
-        self.victory_declarer.declare_victor(self.scorecards) #TODO - this should be last
-
-        number_of_score_types = len(Scorecard().available_score_types)
+        number_of_score_types = len(Scorecard(player_name="full scorecard").available_score_types)
         for i in range(0, number_of_score_types):
             for scorecard in self.scorecards:
                 self.turn_manager.take_a_turn(scorecard)
 
-
+        victor = self.victory_declarer.declare_victor(self.scorecards)
+        self.ui.display(victor + ' wins! Thanks for wasting your time on Yahtzee!')

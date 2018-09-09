@@ -1,4 +1,5 @@
 import unittest
+import copy
 
 from project_files.yahtzee_game.game_manager import GameManager
 from project_files.yahtzee_game.yahtzee_scorecard import Scorecard
@@ -36,6 +37,9 @@ class MockUI:
     def get_all_output_to_user(self):
         return self.all_output_to_user
 
+    def get_last_output_to_user(self):
+        return self.all_output_to_user[-1]
+
 
 class MockTurnManager:
 
@@ -49,6 +53,7 @@ class MockTurnManager:
     def take_a_turn(self, scorecard):
         self.number_of_times_take_a_turn_was_called += 1
         self.parameters_for_take_a_turn.append(scorecard)
+        scorecard.score_a_turn(1, scorecard.available_score_types[0])
 
     def get_turn_parameters(self):
         return self.parameters_for_take_a_turn
@@ -56,12 +61,15 @@ class MockTurnManager:
 class MockVictoryDeclarer:
 
     def __init__(self):
+        self.maxDiff = None
         self.was_declare_victor_called = False
         self.passed_scorecards = []
+        self.winner_name = ""
 
     def declare_victor(self, list_of_scorecards):
         self.was_declare_victor_called = True
-        self.passed_scorecards = list_of_scorecards.copy()
+        self.passed_scorecards = copy.deepcopy(list_of_scorecards)
+        return self.winner_name
 
     def get_declare_victor_was_called(self):
         return self.was_declare_victor_called
@@ -69,10 +77,17 @@ class MockVictoryDeclarer:
     def get_passed_scorecards(self):
         return self.passed_scorecards
 
+    def set_the_winner(self, winner_name):
+        self.winner_name = winner_name
+
+    def was_called_after_scorecards_have_been_updated(self):
+        return len(self.passed_scorecards[0].available_score_types) == 0
+
 
 class GameManagerTest(unittest.TestCase):
 
     def setup_method(self, method):
+
         self.ui = MockUI()
         self.turn_manager = MockTurnManager()
         self.victory_declarer = MockVictoryDeclarer()
@@ -94,7 +109,8 @@ class GameManagerTest(unittest.TestCase):
         for scorecard in self.game_manager.scorecards:
             self.assertIsInstance(scorecard, Scorecard)
 
-        self.assertNotEquals(self.game_manager.scorecards[0], self.game_manager.scorecards[1])
+        self.assertEqual(self.game_manager.scorecards[0].player_name, "Player 1")
+        self.assertEqual(self.game_manager.scorecards[1].player_name, "Player 2")
 
     def test_asks_for_number_of_users_with_3_users(self):
         self.ui.set_test_response(3)
@@ -106,9 +122,9 @@ class GameManagerTest(unittest.TestCase):
         for scorecard in self.game_manager.scorecards:
             self.assertIsInstance(scorecard, Scorecard)
 
-        self.assertNotEquals(self.game_manager.scorecards[0], self.game_manager.scorecards[1])
-        self.assertNotEquals(self.game_manager.scorecards[0], self.game_manager.scorecards[2])
-        self.assertNotEquals(self.game_manager.scorecards[1], self.game_manager.scorecards[2])
+        self.assertEqual(self.game_manager.scorecards[0].player_name, "Player 1")
+        self.assertEqual(self.game_manager.scorecards[1].player_name, "Player 2")
+        self.assertEqual(self.game_manager.scorecards[2].player_name, "Player 3")
 
     def test_calls_take_a_turn_for_three_users(self):
         self.ui.set_test_response(3)
@@ -129,7 +145,7 @@ class GameManagerTest(unittest.TestCase):
 
         self.game_manager.play_game()
 
-        expected_number_of_turns_per_player = len(Scorecard().available_score_types)
+        expected_number_of_turns_per_player = len(Scorecard(player_name="nobody").available_score_types)
         self.assertEquals(self.turn_manager.number_of_turns_taken(), expected_number_of_turns_per_player * 2)
 
     def test_welcome_message_comes_before_asking_number_of_players(self):
@@ -140,6 +156,7 @@ class GameManagerTest(unittest.TestCase):
 
     def test_declares_correct_winner(self):
         self.ui.set_test_response(5)
+        self.victory_declarer.set_the_winner("Player 3")
 
         self.game_manager.play_game()
 
@@ -148,5 +165,6 @@ class GameManagerTest(unittest.TestCase):
 
         self.assertListEqual(passed_scorecards, actual_scorecards)
         self.assertTrue(self.victory_declarer.get_declare_victor_was_called())
-
+        self.assertEqual(self.ui.get_last_output_to_user(), "Player 3 wins! Thanks for wasting your time on Yahtzee!")
+        self.assertTrue(self.victory_declarer.was_called_after_scorecards_have_been_updated())
 

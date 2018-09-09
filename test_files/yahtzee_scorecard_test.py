@@ -9,7 +9,7 @@ from project_files.yahtzee_game.yahtzee_scorecard import Scorecard
 class TestYahtzeeScorecard(unittest.TestCase):
 
     def setup_method(self, method):
-        self.scorecard = Scorecard()
+        self.scorecard = Scorecard(player_name="nobody should see this")
         self.all_score_types = ['yahtzee',
                                 'chance',
                                 'ones',
@@ -72,3 +72,22 @@ class TestYahtzeeScorecard(unittest.TestCase):
             self.fail("expecting an exception")
         except InvalidScoreException as exception:
             self.assertEqual(exception.message, "Score must be a non-negative integer.")
+
+    def test_equals(self):
+        scorecard1 = Scorecard("player")
+        scorecard2 = Scorecard("player")
+        self.assertEquals(scorecard1, scorecard2)
+
+        scorecard1.player_name = "player1"
+        self.assertNotEqual(scorecard1, scorecard2)
+
+        scorecard1.player_name = "player"
+        scorecard1.total_score = -1
+        self.assertNotEqual(scorecard1, scorecard2)
+
+        scorecard1.total_score = 0
+        scorecard1.available_score_types.append("extra type")
+        self.assertNotEqual(scorecard1, scorecard2)
+
+        scorecard2.available_score_types.append("different extra type")
+        self.assertNotEqual(scorecard1, scorecard2)
