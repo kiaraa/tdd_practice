@@ -14,7 +14,7 @@ The turn manager will:
 import unittest
 
 from project_files.yahtzee_game.yahtzee_scorer import Scorer
-from test_files.mocks.mockui import MockUI
+from test_files.mocks.mock_ui import MockUI
 from project_files.yahtzee_game.yahtzee_scorecard import Scorecard
 from project_files.yahtzee_game.turn_manager import TurnManager
 import random, string
@@ -44,8 +44,11 @@ class TestYahtzeeTurnManager(unittest.TestCase):
         self.player_name = randomword(10)
         self.scorecard = Scorecard(player_name=self.player_name)
         self.dice_roller = MockDiceRoller()
+        self.dice_roller.set_dice([1, 1, 1, 1, 1])
         self.scorer = Scorer()
-        self.turn_manager = TurnManager(UI=self.ui, dice_roller=self.dice_roller, scorer=self.scorecard)
+        self.ui.set_test_response("full_house")
+        self.turn_manager = TurnManager(UI=self.ui, dice_roller=self.dice_roller, scorer=self.scorer)
+
 
     def test_says_whos_turn_it_is(self):
         self.turn_manager.take_a_turn(self.scorecard)
@@ -59,29 +62,61 @@ class TestYahtzeeTurnManager(unittest.TestCase):
 
         self.assertTrue(self.ui.check_if_message_was_displayed("You rolled: 1 2 3 4 5"))
 
-    def test_calls_dice_roller(self):
+    def test_calls_dice_roller_in_a_different_way(self):
         self.dice_roller.set_dice([1, 2, 2, 4, 6])
 
         self.turn_manager.take_a_turn(scorecard=self.scorecard)
 
         self.assertTrue(self.ui.check_if_message_was_displayed("You rolled: 1 2 2 4 6"))
 
-
     def test_says_turn_before_saying_dice(self):
         self.turn_manager.take_a_turn(scorecard=self.scorecard)
+
         output_to_user = self.ui.get_all_output_to_user()
+
         self.assertEquals(output_to_user[0], self.player_name + "'s turn.")
 
     def test_asks_user_which_scoring_rule_to_use(self):
         self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["ones", "full_house"])
+
         self.turn_manager.take_a_turn(scorecard=self.scorecard)
+
         self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from: ones, full_house")
 
     def test_asks_user_which_scoring_rule_to_use_with_three(self):
         self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["ones", "full_house", "anything"])
+
         self.turn_manager.take_a_turn(scorecard=self.scorecard)
+
         self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from: ones, full_house, anything")
 
     def setup_scorecard_to_have_these_rules_available(self, scorecard, score_types):
         scorecard.available_score_types = score_types
 
+    def test_scorecard_is_updated_according_to_user_choice(self):
+        self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["twos"])
+        self.dice_roller.set_dice([1, 2, 2, 4, 6])
+        self.ui.set_test_response("twos")
+
+        self.turn_manager.take_a_turn(scorecard=self.scorecard)
+
+        self.assertEqual(self.scorecard.total_score, 4)
+
+    def test_tells_user_about_their_score(self):
+        self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["fours"])
+        self.dice_roller.set_dice([4, 4, 2, 4, 6])
+        self.ui.set_test_response("fours")
+
+        self.turn_manager.take_a_turn(scorecard=self.scorecard)
+
+        self.assertTrue(self.ui.check_if_message_was_displayed("You scored 12 points this turn.  Your total score is: 12"))
+
+    def test_tells_user_score_with_points_already(self):
+        self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["two_pairs"])
+        self.scorecard.total_score = 6
+        self.dice_roller.set_dice([4, 4, 3, 3, 6])
+        self.ui.set_test_response("two_pairs")
+
+        self.turn_manager.take_a_turn(scorecard=self.scorecard)
+
+        self.assertTrue(self.ui.check_if_message_was_displayed("You scored 14 points this turn.  Your total score is: 20"))

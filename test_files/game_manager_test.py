@@ -1,52 +1,10 @@
 import unittest
-import copy
 
 from project_files.yahtzee_game.game_manager import GameManager
 from project_files.yahtzee_game.yahtzee_scorecard import Scorecard
-from test_files.mocks.mockui import MockUI
-
-
-class MockTurnManager:
-
-    def __init__(self):
-        self.number_of_times_take_a_turn_was_called = 0
-        self.parameters_for_take_a_turn = []
-
-    def number_of_turns_taken(self):
-        return self.number_of_times_take_a_turn_was_called
-
-    def take_a_turn(self, scorecard):
-        self.number_of_times_take_a_turn_was_called += 1
-        self.parameters_for_take_a_turn.append(scorecard)
-        scorecard.score_a_turn(1, scorecard.available_score_types[0])
-
-    def get_turn_parameters(self):
-        return self.parameters_for_take_a_turn
-
-class MockVictoryDeclarer:
-
-    def __init__(self):
-        self.maxDiff = None
-        self.was_declare_victor_called = False
-        self.passed_scorecards = []
-        self.winner_name = ""
-
-    def declare_victor(self, list_of_scorecards):
-        self.was_declare_victor_called = True
-        self.passed_scorecards = copy.deepcopy(list_of_scorecards)
-        return self.winner_name
-
-    def get_declare_victor_was_called(self):
-        return self.was_declare_victor_called
-
-    def get_passed_scorecards(self):
-        return self.passed_scorecards
-
-    def set_the_winner(self, winner_name):
-        self.winner_name = winner_name
-
-    def was_called_after_scorecards_have_been_updated(self):
-        return len(self.passed_scorecards[0].available_score_types) == 0
+from test_files.mocks.mock_ui import MockUI
+from test_files.mocks.mock_victory_declarer import MockVictoryDeclarer
+from test_files.mocks.mock_turn_manager import MockTurnManager
 
 
 class GameManagerTest(unittest.TestCase):
