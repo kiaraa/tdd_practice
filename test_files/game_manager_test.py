@@ -23,11 +23,11 @@ class GameManagerTest(unittest.TestCase):
         self.assertTrue(self.ui.check_if_message_was_displayed("Welcome to YAHTZEE!!!!!"))
 
     def test_asks_for_number_of_users_and_creates_a_scorecard_for_each(self):
-        self.ui.set_test_response(2)
+        self.ui.set_test_response('2')
 
         self.game_manager.play_game()
 
-        self.assertEqual(self.ui.last_question_to_user(), "How many people are playing?")
+        self.assertEqual(self.ui.last_question_to_user(), "How many people are playing? ")
         self.assertTrue(len(self.game_manager.scorecards) == 2)
         for scorecard in self.game_manager.scorecards:
             self.assertIsInstance(scorecard, Scorecard)
@@ -40,7 +40,7 @@ class GameManagerTest(unittest.TestCase):
 
         self.game_manager.play_game()
 
-        self.assertEqual(self.ui.last_question_to_user(), "How many people are playing?")
+        self.assertEqual(self.ui.last_question_to_user(), "How many people are playing? ")
         self.assertTrue(len(self.game_manager.scorecards) == 3)
         for scorecard in self.game_manager.scorecards:
             self.assertIsInstance(scorecard, Scorecard)

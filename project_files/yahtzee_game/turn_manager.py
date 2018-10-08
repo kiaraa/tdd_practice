@@ -13,7 +13,7 @@ class TurnManager:
         self.ui.display(message=(self.build_dice_string(dice)))
 
         available_methods = ", ".join(scorecard.available_score_types)
-        score_types_message = "What scoring method do you want to use? Choose from: " + available_methods
+        score_types_message = "What scoring method do you want to use? Choose from: " + available_methods + " "
         selected_score_type = self.ui.ask_user(message=score_types_message)
 
         turn_score = self.scorer.score(dice_set=dice, score_type=selected_score_type)

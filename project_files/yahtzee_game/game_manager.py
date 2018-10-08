@@ -12,7 +12,7 @@ class GameManager():
     def play_game(self):
         self.ui.display("Welcome to YAHTZEE!!!!!")
 
-        number_of_players = self.ui.ask_user("How many people are playing?")
+        number_of_players = int(self.ui.ask_user("How many people are playing? "))
         for i in range(0, number_of_players):
             self.scorecards.append(Scorecard(player_name="Player " + str((i + 1))))
 

@@ -81,14 +81,14 @@ class TestYahtzeeTurnManager(unittest.TestCase):
 
         self.turn_manager.take_a_turn(scorecard=self.scorecard)
 
-        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from: ones, full_house")
+        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from: ones, full_house ")
 
     def test_asks_user_which_scoring_rule_to_use_with_three(self):
         self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["ones", "full_house", "anything"])
 
         self.turn_manager.take_a_turn(scorecard=self.scorecard)
 
-        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from: ones, full_house, anything")
+        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from: ones, full_house, anything ")
 
     def setup_scorecard_to_have_these_rules_available(self, scorecard, score_types):
         scorecard.available_score_types = score_types
