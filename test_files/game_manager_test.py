@@ -10,7 +10,6 @@ from test_files.mocks.mock_turn_manager import MockTurnManager
 class GameManagerTest(unittest.TestCase):
 
     def setup_method(self, method):
-
         self.ui = MockUI()
         self.turn_manager = MockTurnManager()
         self.victory_declarer = MockVictoryDeclarer()
@@ -21,6 +20,12 @@ class GameManagerTest(unittest.TestCase):
     def test_welcome_message(self):
         self.game_manager.play_game()
         self.assertTrue(self.ui.check_if_message_was_displayed("Welcome to YAHTZEE!!!!!"))
+
+    def test_welcome_message_comes_before_asking_number_of_players(self):
+        self.game_manager.play_game()
+
+        output_to_user = self.ui.get_all_output_to_user()
+        self.assertEquals(output_to_user[0], "Welcome to YAHTZEE!!!!!")
 
     def test_asks_for_number_of_users_and_creates_a_scorecard_for_each(self):
         self.ui.set_test_response('2')
@@ -71,11 +76,18 @@ class GameManagerTest(unittest.TestCase):
         expected_number_of_turns_per_player = len(Scorecard(player_name="nobody").available_score_types)
         self.assertEquals(self.turn_manager.number_of_turns_taken(), expected_number_of_turns_per_player * 2)
 
-    def test_welcome_message_comes_before_asking_number_of_players(self):
+    def check_a_blank_line_happens_before_every_turn(self, scorecard):
+        self.assertEqual(self.ui.get_all_output_to_user()[-1], "")
+
+    def test_empty_line_between_turns(self):
+        self.ui.set_test_response(2)
+
+        self.turn_manager.take_a_turn = self.check_a_blank_line_happens_before_every_turn
         self.game_manager.play_game()
 
-        output_to_user = self.ui.get_all_output_to_user()
-        self.assertEquals(output_to_user[0], "Welcome to YAHTZEE!!!!!")
+        expected_number_of_turns_per_player = len(Scorecard(player_name="nobody").available_score_types)
+        output = self.ui.get_all_output_to_user()
+        self.assertTrue(len(output) == expected_number_of_turns_per_player * 2 + 4)
 
     def test_declares_correct_winner(self):
         self.ui.set_test_response(5)
