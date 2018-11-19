@@ -50,9 +50,12 @@ class TestYahtzeeTurnManager(unittest.TestCase):
         self.turn_manager = TurnManager(UI=self.ui, dice_roller=self.dice_roller, scorer=self.scorer)
 
 
+    def setup_scorecard_to_have_these_rules_available(self, scorecard, score_types):
+        scorecard.available_score_types = score_types
+
     def test_says_whos_turn_it_is(self):
         self.turn_manager.take_a_turn(self.scorecard)
-        
+
         self.assertTrue(self.ui.check_if_message_was_displayed(self.player_name + "'s turn."))
 
     def test_calls_dice_roller(self):
@@ -81,17 +84,26 @@ class TestYahtzeeTurnManager(unittest.TestCase):
 
         self.turn_manager.take_a_turn(scorecard=self.scorecard)
 
-        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from: ones, full_house ")
+        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from:\n"
+                                                          "ones                full_house          \n")
 
     def test_asks_user_which_scoring_rule_to_use_with_three(self):
         self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["ones", "full_house", "anything"])
 
         self.turn_manager.take_a_turn(scorecard=self.scorecard)
 
-        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from: ones, full_house, anything ")
+        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from:\n"
+                                                          "ones                full_house          anything            \n")
 
-    def setup_scorecard_to_have_these_rules_available(self, scorecard, score_types):
-        scorecard.available_score_types = score_types
+
+    def test_asks_user_which_scoring_rule_to_use_with_five(self):
+        self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["ones", "twos", "fives", "other", "full_house"])
+
+        self.turn_manager.take_a_turn(scorecard=self.scorecard)
+
+        self.assertEqual(self.ui.last_question_to_user(), "What scoring method do you want to use? Choose from:\n"
+                                                          "ones                twos                fives               \n"
+                                                          "other               full_house          \n")
 
     def test_scorecard_is_updated_according_to_user_choice(self):
         self.setup_scorecard_to_have_these_rules_available(self.scorecard, ["twos"])
